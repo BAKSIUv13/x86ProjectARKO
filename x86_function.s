@@ -18,34 +18,25 @@ x86_function:
 
 ;------------------------------------------------------------------------------
 
-	; rdi - resultImagePtr which point byte
+;	rdi - resultImagePtr
+;	rsi - image2Ptr
+;	edx - mouseX
+;	ecx - mouseY
+;	r8d - width
+;	r9d - height
+	%idefine sinusRatio [rbp + 16]
 
-	mov		al, 0
+;	r10
+;	r11
+;	r12
+;	r13
+;	r14
+;	r15
 
-	mov		byte [rdi], al
-	inc		rdi
 
-	mov		byte [rdi], al
-	inc		rdi
-
-	mov		byte [rdi], al
-	inc		rdi
-
-	inc		rdi
-	inc		rdi
-	inc		rdi
-	inc		rdi
-	inc		rdi
+;------------------------------------------------------------------------------
 	
-
-	mov		byte [rdi], al
-	inc		rdi
-
-	mov		byte [rdi], al
-	inc		rdi
-
-	mov		byte [rdi], al
-	inc		rdi
+	;
 
 ;------------------------------------------------------------------------------
 ;	save registers

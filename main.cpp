@@ -1,5 +1,5 @@
-// x86Project
-// 06.01.2018
+// x86Project Alpha Blending
+// 07.01.2018
 // Bartlomiej Kulik
 
 #include <iostream>
@@ -39,8 +39,20 @@ int main(void)
 		resultImagePtr[i] = image1Ptr[i];
 	}
 
-	x86_function(resultImagePtr, image2Ptr, 250, 250, width, height, 50); // CALL x86_function
+	
 
+
+
+	// CALL x86_function
+	std::cout << x86_function(resultImagePtr, image2Ptr, 250, 250, width, height, 64);
+	std::cout << std::endl;
+
+
+
+
+
+
+	// save result using resultImagePtr
 	sf::Image resultImage;
 	resultImage.create(width, height, resultImagePtr);
 	if (!resultImage.saveToFile("result.png"))
