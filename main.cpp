@@ -39,18 +39,22 @@ int main(void)
 		resultImagePtr[i] = image1Ptr[i];
 	}
 
-	
-
-
-
 	// CALL x86_function
-	std::cout << x86_function(resultImagePtr, image2Ptr, 250, 250, width, height, 64);
+	std::cout << "RAX: " << x86_function(resultImagePtr, image2Ptr, 250, 250, width, height, 64);
+	std::cout << std::endl;
 	std::cout << std::endl;
 
-
-
-
-
+	// print first pixels
+	unsigned int pixels = 4;
+	
+	for (unsigned int i = 0; i < pixels; ++i)
+	{
+		for (unsigned int j = 0; j < 4; ++j)
+		{
+			std::cout << (int)resultImagePtr[i * 4 + j] << std::endl;
+		}
+		std::cout << std::endl;
+	}
 
 	// save result using resultImagePtr
 	sf::Image resultImage;
