@@ -7,7 +7,7 @@ x86_function:
 	push		rbp
 	mov		rbp, rsp
 
-	sub		rsp, 8
+	sub		rsp, 8		; for sinus argument
 
 ;------------------------------------------------------------------------------
 ;	save registers
@@ -48,14 +48,13 @@ x86_function:
 ; 	xmm9 - sinusRatio
 
 ;------------------------------------------------------------------------------
-	finit
+	finit		; init x87
 
 	mov		r11d, 1		; actual Y update
 
 	cvtsi2sd	xmm1, r11d 	; xmm1 - 1.0
 	movsd		xmm2, xmm1
 	addsd		xmm2, xmm1 	; xmm2 - 2.0
-
 
 nextLine:
 
@@ -83,19 +82,16 @@ nextColumn:
 
 	
 
-	cvtsi2sd	xmm4, r14d	; xmm13 = (double)r8d
+	cvtsi2sd	xmm4, r14d
 	sqrtsd		xmm4, xmm4
-	
-	; now we have distance - argument to sinus
 
-; make sinus
-
-	
 	mov 		rax, sinusRatio
 	cvtsi2sd	xmm9, eax
-
 	divsd 		xmm4, xmm9
+	
+	; now we have distance/sinusRatio - argument to sinus
 
+; make sinus
 
 	movq		qword [rbp - 8], xmm4
 	fld		qword [rbp - 8]
@@ -105,13 +101,11 @@ nextColumn:
 
 	; now i have sinus in xmm5
 
-
 	movsd 		xmm3, xmm1
 	movsd		xmm6, xmm1
 
-	addsd 		xmm3, xmm5
-	subsd 		xmm6, xmm5
-
+	addsd 		xmm3, xmm5	; xmm3 - 1 + sinus
+	subsd 		xmm6, xmm5	; xmm6 - 1 - sinus
 
 ; red
 	; get byte from picture
@@ -119,7 +113,7 @@ nextColumn:
 	mov 		al, [rdi]
 	mov 		ah, [rsi]
 
-	; extend byto to 32 bits
+	; extend byte to 32 bits
 
 	movzx		r15d, al
 	movzx 		ebx, ah
@@ -142,7 +136,7 @@ nextColumn:
 	inc		rsi
 
 ; green
-		; get byte from picture
+	; get byte from picture
 
 	mov 		al, [rdi]
 	mov 		ah, [rsi]
@@ -171,7 +165,7 @@ nextColumn:
 	inc		rsi
 
 ; blue
-		; get byte from picture
+	; get byte from picture
 
 	mov 		al, [rdi]
 	mov 		ah, [rsi]
@@ -200,7 +194,7 @@ nextColumn:
 
 ; alpha
 	
-	; do smth
+	; do nothing
 	inc 		rdi
 	inc		rsi
 

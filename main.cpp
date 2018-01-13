@@ -1,5 +1,5 @@
 // x86Project Alpha Blending
-// 07.01.2018
+// 12.01.2018
 // Bartlomiej Kulik
 
 #include <iostream>
@@ -10,6 +10,7 @@
 			
 int main(void)
 {
+	// open images
 	sf::Image image1;
 	if (!image1.loadFromFile("image1.png"))
 	{
@@ -35,37 +36,72 @@ int main(void)
 	// every pixel have 4 components - RGBA
 
 	// copying arrays of pixels
-	for (unsigned int i = 0; i < 4 * width * height; ++i)	
+
+
+	// main body
+
+	
+
+    // SFML
+
+
+    sf::Texture textureImage1;
+	textureImage1.loadFromImage(image1);
+	sf::Sprite spriteImage1;
+	spriteImage1.setTexture(textureImage1, true);
+
+	sf::Image resultImage;
+	sf::Texture textureResult;
+	sf::Sprite spriteResult;
+	
+	sf::RenderWindow window(sf::VideoMode(width, height), "x86Project Alpha Blending");
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{	
+    			sf::Vector2i position = sf::Mouse::getPosition(window);
+    			// do smth with position
+
+    				for (unsigned int i = 0; i < 4 * width * height; ++i)	
 	{
 		resultImagePtr[i] = image1Ptr[i];
 	}
+    			
+				    // CALL x86_function and make resultImage
+					x86_function(resultImagePtr, image2Ptr, position.x, position.y, width, height, 10);
+					// save result using resultImagePtr
+					
+					resultImage.create(width, height, resultImagePtr);
+					if (!resultImage.saveToFile("result.png"))
+				    {
+				    	throw std::logic_error("Bad save to file.");
+				    }
+				    // END CALL x86_function and make resultImage
 
-	// CALL x86_function
-	std::cout << "RAX/XMM0: " << x86_function(resultImagePtr, image2Ptr, 
-		100, 138, width, height, 10);
+				    
 
-	std::cout << std::endl;
-	std::cout << std::endl;
-
-	// print first pixels
-	unsigned int pixels = 8;
+				    
+					textureResult.loadFromImage(resultImage);
+					spriteResult.setTexture(textureResult, true);
+					spriteImage1 = spriteResult;
 	
-	for (unsigned int i = 0; i < pixels; ++i)
-	{
-		for (unsigned int j = 0; j < 4; ++j)
-		{
-			std::cout << (int)resultImagePtr[i * 4 + j] << std::endl;
-		}
-		std::cout << std::endl;
-	}
 
-	// save result using resultImagePtr
-	sf::Image resultImage;
-	resultImage.create(width, height, resultImagePtr);
-	if (!resultImage.saveToFile("result.png"))
-    {
-    	throw std::logic_error("Bad save to file.");
+			}
+
+			window.clear();
+        	window.draw(spriteImage1);
+        	window.display();
+        }
+
     }
+    // SFML
 
 	return 0;
 }
