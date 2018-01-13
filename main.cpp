@@ -34,18 +34,21 @@ int main(void)
 	sf::Uint8* resultImagePtr = new sf::Uint8[4 * width * height]; 
 	// every pixel have 4 components - RGBA
 
-	for (unsigned int i = 0; i < 4 * width * height; ++i)	// copying arrays of pixels
+	// copying arrays of pixels
+	for (unsigned int i = 0; i < 4 * width * height; ++i)	
 	{
 		resultImagePtr[i] = image1Ptr[i];
 	}
 
 	// CALL x86_function
-	std::cout << "RAX: " << x86_function(resultImagePtr, image2Ptr, 250, 250, width, height, 64);
+	std::cout << "RAX/XMM0: " << x86_function(resultImagePtr, image2Ptr, 
+		100, 138, width, height, 10);
+
 	std::cout << std::endl;
 	std::cout << std::endl;
 
 	// print first pixels
-	unsigned int pixels = 4;
+	unsigned int pixels = 8;
 	
 	for (unsigned int i = 0; i < pixels; ++i)
 	{
