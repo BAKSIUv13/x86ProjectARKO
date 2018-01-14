@@ -6,7 +6,7 @@
 #define X86_FUNCTION_H_
 
 extern "C" 
-int x86_function(sf::Uint8* pixelsToEditImage1, const sf::Uint8* pixelsImage2, 
+void x86_function(sf::Uint8* pixelsToEditImage1, const sf::Uint8* pixelsImage2, 
 				const int mouseX, const int mouseY, 
 				const unsigned int width, const unsigned int height, 
 				const unsigned int sinusRatio);	

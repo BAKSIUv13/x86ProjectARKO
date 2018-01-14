@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -m64
+CFLAGS = -Wall -m64 -std=c++11
 
 all: main.o x86_function.o -lsfml-graphics -lsfml-window -lsfml-system
 	$(CC) $(CFLAGS) -o program main.o x86_function.o -lsfml-graphics -lsfml-window -lsfml-system
