@@ -1,5 +1,5 @@
 // x86Project Alpha Blending
-// 12.01.2018
+// 14.01.2018
 // Bartlomiej Kulik
 
 #include <iostream>

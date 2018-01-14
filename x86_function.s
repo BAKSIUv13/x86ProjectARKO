@@ -1,3 +1,7 @@
+; Alpha Blending
+; 14.01.2018
+; Bartlomiej Kulik
+
 	section		.text
 
 	global		x86_function
@@ -7,10 +11,11 @@ x86_function:
 	push		rbp
 	mov		rbp, rsp
 
-	sub		rsp, 8		; for sinus argument
+	sub		rsp, 8			; for sinus argument
 
 ;------------------------------------------------------------------------------
-;	save registers
+
+; save registers
 
 	push		r12
 	push		r13
@@ -20,7 +25,7 @@ x86_function:
 
 ;------------------------------------------------------------------------------
 
-;	rdi - resultImagePtr
+; 	rdi - resultImagePtr = image1Ptr
 ;	rsi - image2Ptr
 ;	edx - mouseX
 ;	ecx - mouseY
@@ -28,68 +33,83 @@ x86_function:
 ;	r9d - height
 	%idefine sinusRatio [rbp + 16]
 
+;------------------------------------------------------------------------------
+
 ;	r10d - actual X
 ;	r11d - actual Y
 ;	r12d - (mouseX - actual X)^2 
 ;	r13d - (mouseY - actual Y)^2
 ;	r14d - distance^2
-;	r15d - colour from Im1
-;	ebx  - colour from Im2
-
+;	r15d - colour from Im1 - char to unsigned int
+;	ebx  - colour from Im2 - char to unsigned int
 
 ;	xmm1 - 1.0
 ;	xmm2 - 2.0
 ;	xmm3 - 1 + sinus
 ;	xmm6 - 1 - sinus
-;	xmm4 - distance
+;	xmm4 - distance and an argument to sinus
 ;	xmm5 - sinus
-;	xmm7 - colour from Im1
+;	xmm7 - colour from Im1 
 ;	xmm8 - colour from Im2
 ; 	xmm9 - sinusRatio
 
+;	Alpha Blending
+;	(xmm7*xmm3 + xmm8*xmm6)/xmm2
+
 ;------------------------------------------------------------------------------
-	finit		; init x87
+	
+; prepare
 
-	mov		r11d, 1		; actual Y update
+	finit					; init x87
 
-	cvtsi2sd	xmm1, r11d 	; xmm1 - 1.0
+	mov		r11d, 1			; actual Y update
+
+	cvtsi2sd	xmm1, r11d 		; xmm1 - 1.0
+	; cvtsi2sd - Convert Dword Integer to Scalar Double-Precision FP Value
+
 	movsd		xmm2, xmm1
-	addsd		xmm2, xmm1 	; xmm2 - 2.0
+	addsd		xmm2, xmm1 		; xmm2 - 2.0
+
+	; Move sd (Scalar Double)-Precision Floating-Point Value
+	; added "sd" to instructions based on integral values
+
+;------------------------------------------------------------------------------
+
+; MAIN ALGORITHM AND LOOPS
 
 nextLine:
 
-	mov		r10d, 1		; actual X update - nextLine
+	mov		r10d, 1			; actual X update - nextLine
 
 nextColumn:
 
 ; make distance
 
-	neg		r10d
+	neg		r10d			; r10d = -r10d
 	neg		r11d
 
 	lea		r12d, [edx + r10d]
 	lea		r13d, [ecx + r11d]
 
-	imul		r12d, r12d
+	imul		r12d, r12d		; r12d^2
 	imul		r13d, r13d
 
 	lea		r14d, [r12d + r13d]
 
-	neg		r10d
+	neg		r10d			
 	neg		r11d
 
-	; now we have distance^2
-
-	
+; now we have distance^2 - r14d
 
 	cvtsi2sd	xmm4, r14d
 	sqrtsd		xmm4, xmm4
+	; sqrtsd - Compute Square Root of Scalar Double-Precision Floating-Point Value
 
-	mov 		rax, sinusRatio
+	mov 		eax, sinusRatio
 	cvtsi2sd	xmm9, eax
 	divsd 		xmm4, xmm9
 	
-	; now we have distance/sinusRatio - argument to sinus
+; now we have distance/sinusRatio - argument to sinus - xmm4
 
 ; make sinus
 
@@ -99,7 +119,7 @@ nextColumn:
 	fstp		qword [rbp - 8]
 	movq		xmm5, qword [rbp - 8]
 
-	; now i have sinus in xmm5
+; now i have sinus in xmm5
 
 	movsd 		xmm3, xmm1
 	movsd		xmm6, xmm1
@@ -107,13 +127,14 @@ nextColumn:
 	addsd 		xmm3, xmm5	; xmm3 - 1 + sinus
 	subsd 		xmm6, xmm5	; xmm6 - 1 - sinus
 
-; red
-	; get byte from picture
+; RED
+	
+; get byte from picture
 
 	mov 		al, [rdi]
 	mov 		ah, [rsi]
 
-	; extend byte to 32 bits
+; extend byte to 32 bits
 
 	movzx		r15d, al
 	movzx 		ebx, ah
@@ -129,19 +150,22 @@ nextColumn:
 	divsd 		xmm7, xmm2
 
 	cvtsd2si	rax, xmm7
+	; cvtsd2si - Convert Scalar Double-Precision FP Value to Integer
 
-	; send al
+; send al
+
 	mov		[rdi], al
 	inc		rdi
 	inc		rsi
 
-; green
-	; get byte from picture
+; GREEN
+
+; get byte from picture
 
 	mov 		al, [rdi]
 	mov 		ah, [rsi]
 
-	; extend byto to 32 bits
+; extend byte to 32 bits
 
 	movzx		r15d, al
 	movzx 		ebx, ah
@@ -157,20 +181,22 @@ nextColumn:
 	divsd 		xmm7, xmm2
 
 	cvtsd2si	rax, xmm7
-	
-	
-	; send al
+	; cvtsd2si - Convert Scalar Double-Precision FP Value to Integer
+
+; send al
+
 	mov		[rdi], al
 	inc		rdi
 	inc		rsi
 
-; blue
-	; get byte from picture
+; BLUE
+
+; get byte from picture
 
 	mov 		al, [rdi]
 	mov 		ah, [rsi]
 
-	; extend byto to 32 bits
+; extend byte to 32 bits
 
 	movzx		r15d, al
 	movzx 		ebx, ah
@@ -186,21 +212,24 @@ nextColumn:
 	divsd 		xmm7, xmm2
 
 	cvtsd2si	rax, xmm7
-	
-	; send al
+	; cvtsd2si - Convert Scalar Double-Precision FP Value to Integer
+
+; send al
+
 	mov		[rdi], al
 	inc		rdi
 	inc		rsi
 
-; alpha
+; ALPHA
 	
-	; do nothing
+; do nothing with alpha
+
 	inc 		rdi
 	inc		rsi
 
 ; next pixel
 
-	inc		r10d		; next pixel
+	inc		r10d
 	cmp		r10d, r8d
 	jbe		nextColumn
 
@@ -210,7 +239,8 @@ nextColumn:
 
 end:
 ;------------------------------------------------------------------------------
-;	save registers
+
+; save registers
 
 	pop		rbx
 	pop		r15
