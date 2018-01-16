@@ -19,7 +19,7 @@ int main(void)
 	unsigned int height = pictures.getHeight();
 	
 	sf::RenderWindow window(sf::VideoMode(width, height), 
-		"x86Project Alpha Blending");
+		"x86Project Alpha Blending", sf::Style::Titlebar | sf::Style::Close);
 
 	unsigned int sineRatio = 10;
 	bool inWindow = false;
